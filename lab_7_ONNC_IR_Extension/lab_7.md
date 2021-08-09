@@ -169,14 +169,14 @@ To access another operator from a given operator, it can be done indirectly by a
 
 <img src="../figures/ir_graph_get_output.png" width="400">
 
-To get an output tensor of an operator, we first call `getOutput()` to get an output tensor and an index argument is required because an operator can have multiple outputs. `GetOutput()` returns a pointer to a `Value` object that might have multiple usages stored in an array. You may call `getUses()` to get the usage array. By retrieving a specific entry of the usage array and then calling `getUser()`, you eventually get the pointer to the target `ComputeOperator`.
+To get an output tensor of an operator, we first call `getOutput()` to get an output tensor and an index argument is required because an operator can have multiple outputs. `getOutput()` returns a pointer to a `Value` object that might have multiple usages stored in an array. You may call `getUses()` to get the usage array. By retrieving a specific entry of the usage array and then calling `getUser()`, you eventually get the pointer to the target `ComputeOperator`.
 For example, given an operator `op`, we can access its first downstream operator using `op.getOutput(0)->getUses()[0].getUser()`.
 
 Similarly, if you need to access an upstream operator of a given operator, follow the instructions shown in the following figure.
 
 <img src="../figures/ir_graph_get_input.png" width="400">
 
-You may call `getInput()` with a specific index to get the corresponding input tensor and then call `getDefine()` to get the upstream operator that produces this tensor. Note that there is no index for `getDefine()` because there exists only one upstream operator for each tensor. `GetDefine()` returns a pointer to a `Define` object. In fact, `class Define` is one of the parent class of `ComputeOperator`, so you can use `static_cast` to cast that operator as a `ComputeOperator`. For example, given an operator `op`, we can access its first upstream operator using `static_cast<ComputeOperator*>(op.getInput(0)->getDefine())`.
+You may call `getInput()` with a specific index to get the corresponding input tensor and then call `getDefine()` to get the upstream operator that produces this tensor. Note that there is no index for `getDefine()` because there exists only one upstream operator for each tensor. `getDefine()` returns a pointer to a `Define` object. In fact, `class Define` is one of the parent class of `ComputeOperator`, so you can use `static_cast` to cast that operator as a `ComputeOperator`. For example, given an operator `op`, we can access its first upstream operator using `static_cast<ComputeOperator*>(op.getInput(0)->getDefine())`.
 
 We have prepared the complete source code of [NvDlaIdentifyShufflePass.cpp](src/NvDlaIdentifyShufflePass.cpp) and [NvDlaIdentifyShufflePass.h](src/NvDlaIdentifyShufflePass.h) for your reference. You may copy them into `<path/to/onnc>/lib/Target/FooNvdla` if you do not want to code from scratch. Lastly, register this new pass to the pass manager to make it effective. There is an utility pass, `PrintONNCIRPass` available in the tutorial `src` directory to dump the whole ONNC IR graph in text format. We can use it to validate the optimization effect. 
 
